@@ -20,26 +20,6 @@ def parse_args():
     parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate (default: 1e-4).")
     return parser.parse_args()
     
-# # --- Настройка устройства ---
-# device = torch.device(args.device if torch.cuda.is_available() or args.device == "cpu" else "cpu")
-# print(f"Используется устройство: {device}")
-
-# # --- Параметры ---
-# batch_size = 8
-# epochs = 20
-# learning_rate = 1e-4
-
-# # --- Инициализация моделей ---
-# decom_net = DecomNet().to(device)
-# enhance_net = EnhanceNet().to(device)
-
-# # --- Оптимизаторы ---
-# decom_optimizer = torch.optim.Adam(decom_net.parameters(), lr=learning_rate)
-# enhance_optimizer = torch.optim.Adam(enhance_net.parameters(), lr=learning_rate)
-
-# # --- Скалер для Mixed Precision Training ---
-# scaler = GradScaler()
-
 # --- Сглаживание для Enhance-Net ---
 def contrast_loss(I_low_enhanced):
     grad_x = torch.abs(I_low_enhanced[:, :, :, :-1] - I_low_enhanced[:, :, :, 1:])
@@ -165,18 +145,6 @@ def save_intermediate_layers(R_low, I_low, I_low_enhanced, epoch, batch_idx):
         cv2.imwrite(os.path.join(output_dir, f"illumination_{i}.png"), illumination.clip(0, 255).astype('uint8'))
         cv2.imwrite(os.path.join(output_dir, f"illumination_enhanced_{i}.png"), illumination_enhanced.clip(0, 255).astype('uint8'))
 
-# # --- Основной код ---
-# if __name__ == "__main__":
-#     # Создание директорий
-#     os.makedirs("checkpoints", exist_ok=True)
-#     os.makedirs("output/intermediate", exist_ok=True)
-
-#     # Загрузка данных
-#     train_dataset = LowLightDataset("dataset/train/low", "dataset/train/normal")
-#     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
-#     # Обучение моделей
-#     train_models(decom_net, enhance_net, train_loader, decom_optimizer, enhance_optimizer, scaler, epochs)
 def init_weights(m):
     if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
         nn.init.xavier_uniform_(m.weight)  # Xavier инициализация
@@ -204,15 +172,14 @@ if __name__ == "__main__":
     enhance_net.apply(init_weights)
 
     # --- Оптимизаторы ---
-    decom_optimizer = torch.optim.Adam(decom_net.parameters(), lr=1e-4)
+    decom_optimizer = torch.optim.Adam(decom_net.parameters(), lr=1e-4) # !ЭТО ВРЕМЕННОЕ
     enhance_optimizer = torch.optim.Adam(enhance_net.parameters(), lr=learning_rate)
 
     # --- Скалер для Mixed Precision Training ---
     scaler = GradScaler()
 
     # --- Загрузка данных ---
-    # train_dataset = LowLightDataset("dataset/train_tiny/low", "dataset/train_tiny/normal")
-    train_dataset = LowLightDataset("BrighteningTrain_small/low", "BrighteningTrain_small/normal")
+    train_dataset = LowLightDataset("dataset/train_tiny/low", "dataset/train_tiny/normal")
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
     # --- Обучение моделей ---
