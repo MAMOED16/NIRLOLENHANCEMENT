@@ -14,10 +14,10 @@ from utils.data_loader import LowLightDataset
 def parse_args():
     parser = argparse.ArgumentParser(description="Train Decom-Net and Enhance-Net for low-light image enhancement.")
     parser.add_argument("--device", type=str, default="cuda", choices=["cuda", "cpu"],
-                        help="Device to use for training: 'cuda' or 'cpu' (default: 'cuda').")
-    parser.add_argument("--batch_size", type=int, default=8, help="Batch size for training (default: 8).")
-    parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs (default: 3).")
-    parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate (default: 1e-4).")
+                        help="Device to use for training: 'cuda' or 'cpu' (default: 'cuda').") # --cuda для обучения на GPU
+    parser.add_argument("--batch_size", type=int, default=8, help="Batch size for training (default: 8).") # --batch_size размер пачек
+    parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs (default: 3).") # --epochs кол-во эпох
+    parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate (default: 1e-4).") # --learning_rate пока что только для enhance_net
     return parser.parse_args()
     
 # --- Сглаживание для Enhance-Net ---
